@@ -1053,17 +1053,6 @@ spec: html
       </td>
     </tr>
     <tr>
-      <td><dfn>\[[attributeInstanceMap]]</dfn></td>
-      <td>
-        An empty map from <a>Bluetooth cache</a> entries to {{Promise}}s.
-      </td>
-      <td>
-        The {{Promise}}s resolve to either {{BluetoothRemoteGATTService}},
-        {{BluetoothRemoteGATTCharacteristic}}, or {{BluetoothRemoteGATTDescriptor}}
-        instances.
-      </td>
-    </tr>
-    <tr>
       <td><dfn>\[[referringDevice]]</dfn></td>
       <td>
         `null`
@@ -2304,6 +2293,17 @@ spec: html
           a {{referringDevice}} that advertised a URL on that origin.
         </td>
       </tr>
+      <tr>
+        <td><dfn>\[[attributeInstanceMap]]</dfn></td>
+        <td>
+          An empty map from <a>Bluetooth cache</a> entries inside `this` device to {{Promise}}s.
+        </td>
+        <td>
+          The {{Promise}}s resolve to either {{BluetoothRemoteGATTService}},
+          {{BluetoothRemoteGATTCharacteristic}}, or {{BluetoothRemoteGATTDescriptor}}
+          instances.
+        </td>
+      </tr>
     </table>
 
     <div algorithm>
@@ -2995,18 +2995,14 @@ spec: html
             of known-present cache entries matching the description.
           </li>
           <li>
-            Let <var>context</var> be
-            <code><var>deviceObj</var>.{{BluetoothDevice/[[context]]}}</code>.
-          </li>
-          <li>
             Let <var>result</var> be a new sequence.
           </li>
           <li>
             For each <var>entry</var> in <var>entries</var>:
             <ol>
               <li>
-                If <var>entry</var> has no associated <code>Promise&lt;BluetoothGATT*></code> instance
-                in <var>context</var>.{{Bluetooth/[[attributeInstanceMap]]}},
+                If <var>entry</var> has no associated <code>Promise&lt;BluetoothGATT*></code> instance </br>
+                in <var>deviceObj</var>.{{BluetoothDevice/[[attributeInstanceMap]]}},
                 <a>create a <code>BluetoothRemoteGATTService</code>
                 representing</a> <var>entry</var>,
                 <a>create a <code>BluetoothRemoteGATTCharacteristic</code>
@@ -3014,14 +3010,14 @@ spec: html
                 or <a>create a <code>BluetoothRemoteGATTDescriptor</code>
                 representing</a> <var>entry</var>,
                 depending on whether <var>entry</var> is a Service, Characteristic, or Descriptor,
-                and add a mapping from <var>entry</var> to the resulting <code>Promise</code>
-                in <var>context</var>.{{Bluetooth/[[attributeInstanceMap]]}}.
+                and add a mapping from <var>entry</var> to the resulting <code>Promise</code> </br>
+                in <var>deviceObj</var>.{{BluetoothDevice/[[attributeInstanceMap]]}}.
               </li>
               <li>
                 Append to <var>result</var>
                 the <code>Promise&lt;BluetoothGATT*></code> instance
-                associated with <var>entry</var>
-                in <var>context</var>.{{Bluetooth/[[attributeInstanceMap]]}}.
+                associated with <var>entry</var> </br>
+                in <var>deviceObj</var>.{{BluetoothDevice/[[attributeInstanceMap]]}}.
               </li>
             </ol>
           </li>
@@ -4608,7 +4604,7 @@ spec: html
             Let |context| be <code>|deviceObj|.{{[[context]]}}</code>.
           </li>
           <li>
-            Remove all entries from <code>|context|.{{[[attributeInstanceMap]]}}</code>
+            Remove all entries from <code>|deviceObj|.{{[[attributeInstanceMap]]}}</code>
             whose keys are inside <code>|deviceObj|.{{[[representedDevice]]}}</code>.
           </li>
           <li>
@@ -4861,8 +4857,10 @@ spec: html
                 <a for="environment settings object">global object</a>.
               </li>
               <li>
-                Remove every entry
-                from <code>|global|.navigator.bluetooth.{{[[attributeInstanceMap]]}}</code>
+                For each {{BluetoothDevice}} |deviceObj|
+                in <code>|global|.navigator.bluetooth.{{[[deviceInstanceMap]]}}</code>
+                remove every entry
+                from <code>|deviceObj|.{{[[attributeInstanceMap]]}}</code>
                 that represents an attribute that
                 is in |invalidatedAttributes|.
               </li>
